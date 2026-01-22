@@ -22,6 +22,10 @@ import dashboardRoutes from "./routes/dashboard.js";
 import reviewsRoutes from "./routes/reivewsRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
 
+app.use("/", (req, res) => {
+  res.send("Admin Portal Backend is running");
+});
+
 app.use("/api/admin/users", userRoutes);
 app.use("/api/admin/package", packageRoutes);
 app.use("/api/admin/hotel", hotelRoutes);
