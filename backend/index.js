@@ -39,6 +39,6 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message: message });
 });
 
-app.listen(PORT, () => {
-  console.log(`Admin Portal Backend is running on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`Admin Portal Backend is running on port ${PORT}`);
+// });
