@@ -31,9 +31,5 @@ export const registerUser = async (req, res, next) => {
   }
 };
 
-// Login and Logout logic is handled by Musafir backend
-// See Musafir/backend/controllers/auth.controller.js for signin and logout
-// MUSAFIR-ADMIN frontend uses Musafir backend at /api/auth/signin and /api/auth/logout
-
 
 
