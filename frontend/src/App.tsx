@@ -15,12 +15,20 @@ import ItineraryDetailPage from "./pages/ItineraryPage/ItineraryDetailPage";
 import PackageDetailPage from "./pages/Packages/PackageDetailPage";
 import AdminRoute from "./routes/AdminRoute";
 import AdminLayout from "./layouts/AdminLayout";
+import AdminLogin from "./pages/AdminLoginPage/AdminLogin";
 
 const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<AdminLayout />}>
+        <Route path="/admin/signin" element={<AdminLogin />} />
+        <Route
+          element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }
+        >
           <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/booking" element={<Booking />} />

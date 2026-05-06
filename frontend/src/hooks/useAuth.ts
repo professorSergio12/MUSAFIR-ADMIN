@@ -1,7 +1,12 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import { setCurrentUser, logout as logoutAction } from "../redux/userSlice";
-import { verifyAdmin, logout } from "../api/authApi";
+import { verifyAdmin, logout, signin } from "../api/authApi";
+
+interface SigninCredentials {
+  adminId: string;
+  password: string;
+}
 
 // Hook to verify admin authentication from Musafir backend
 export const useVerifyAdmin = () => {
@@ -26,19 +31,35 @@ export const useVerifyAdmin = () => {
   });
 };
 
+export const useAdminSignin = () => {
+  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: SigninCredentials) => signin(data),
+    onSuccess: (data) => {
+      dispatch(setCurrentUser(data));
+      void queryClient.invalidateQueries({ queryKey: ["verifyAdmin"] });
+    },
+  });
+};
+
 export const useLogout = () => {
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () => logout(),
     onSuccess: () => {
-      console.log("Logout success");
       dispatch(logoutAction());
-      // Redirect to Musafir admin login page
-      window.location.href = "http://localhost:5173/admin/signin";
+      void queryClient.removeQueries({ queryKey: ["verifyAdmin"] });
+      window.location.href = `${window.location.origin}/admin/signin`;
     },
     onError: (error) => {
       console.error("Logout error:", error);
+      dispatch(logoutAction());
+      void queryClient.removeQueries({ queryKey: ["verifyAdmin"] });
+      window.location.href = `${window.location.origin}/admin/signin`;
     },
   });
 };

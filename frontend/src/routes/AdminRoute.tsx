@@ -12,8 +12,7 @@ const AdminRoute = ({ children }: AdminRouteProps) => {
   useEffect(() => {
     // Immediately redirect if error or not admin (no flash of content)
     if (!isLoading && (isError || !user || user.role !== "admin")) {
-      // window.location.href = "http://localhost:5173/admin/signin";
-      window.location.href = `${import.meta.env.VITE_MUSAFIR_ADMIN_URL}/admin/signin`;
+      window.location.href = `${window.location.origin}/admin/signin`;
     }
   }, [isLoading, isError, user]);
 

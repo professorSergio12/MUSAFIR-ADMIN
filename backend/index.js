@@ -33,7 +33,9 @@ import bookingRoutes from "./routes/bookingRoutes.js";
 import dashboardRoutes from "./routes/dashboard.js";
 import reviewsRoutes from "./routes/reivewsRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
+import adminAuthRoutes from "./routes/adminAuthRoutes.js";
 
+app.use("/api/admin/auth", adminAuthRoutes);
 
 app.use("/api/admin/users", userRoutes);
 app.use("/api/admin/package", packageRoutes);

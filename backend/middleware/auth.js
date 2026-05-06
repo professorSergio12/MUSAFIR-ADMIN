@@ -1,43 +1,6 @@
 import { errorHandler } from "../util/error.js";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
-
-// Import User model from Musafir (since authentication is handled by Musafir backend)
-// Both backends use the same MongoDB database, so we can use the same User model
-const userSchema = new mongoose.Schema(
-  {
-    username: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    profilePicture: {
-      type: String,
-      default:
-        "https://res.cloudinary.com/dpu6rveug/image/upload/v1763527341/profile-img_iq5gto.webp",
-    },
-    profilePictureId: {
-      type: String,
-      default: null,
-    },
-    role: {
-      type: String,
-      enum: ["user", "admin"],
-      default: "user",
-    },
-  },
-  { timestamps: true }
-);
-
-const User = mongoose.models.User || mongoose.model("User", userSchema);
+import User from "../models/auth.model.js";
 
 export const userAuth = async (req, res, next) => {
   const { access_token } = req.cookies;

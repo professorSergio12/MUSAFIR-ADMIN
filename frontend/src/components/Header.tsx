@@ -8,8 +8,12 @@ import {
   MapPin,
   Loader2,
   LayoutDashboard,
+  LogOut,
 } from "lucide-react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../redux/store";
 import { fetchGlobalSearch } from "../api/Dashboard";
+import { useLogout } from "../hooks/useAuth";
 
 interface SearchResult {
   hotels: any[];
@@ -18,6 +22,8 @@ interface SearchResult {
 }
 
 export default function Header() {
+  const currentUser = useSelector((s: RootState) => s.user.currentUser);
+  const { mutate: logoutMutate, isPending: isLoggingOut } = useLogout();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -221,19 +227,32 @@ export default function Header() {
           </div>
 
           {/* Right - Actions & User */}
-          <div className="flex items-center gap-4 w-48 justify-end">
-            {/* User Profile */}
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <p className="text-sm font-medium text-slate-900">Admin User</p>
-                <p className="text-xs text-slate-500">Administrator</p>
+          <div className="flex flex-shrink-0 items-center justify-end gap-3 sm:gap-4">
+            <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+              <div className="min-w-0 text-right">
+                <p className="truncate text-sm font-medium text-slate-900">
+                  {currentUser?.username ?? "Admin"}
+                </p>
+                <p className="truncate text-xs text-slate-500 max-w-[10rem] sm:max-w-[11rem]">
+                  {currentUser?.email ?? "Administrator"}
+                </p>
               </div>
-              <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-slate-200 cursor-pointer hover:border-indigo-300 transition">
-                <div className="w-full h-full bg-indigo-100 flex items-center justify-center">
-                  <User className="w-5 h-5 text-indigo-600" />
+              <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full border-2 border-indigo-100 bg-indigo-50">
+                <div className="flex h-full w-full items-center justify-center">
+                  <User className="h-5 w-5 text-indigo-600" />
                 </div>
               </div>
             </div>
+            <button
+              type="button"
+              onClick={() => logoutMutate()}
+              disabled={isLoggingOut}
+              className="inline-flex h-10 flex-shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-600 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+              aria-label={isLoggingOut ? "Signing out" : "Log out"}
+            >
+              <LogOut className="h-4 w-4 text-indigo-600" aria-hidden />
+              <span>{isLoggingOut ? "Signing out…" : "Log out"}</span>
+            </button>
           </div>
         </div>
       </div>
