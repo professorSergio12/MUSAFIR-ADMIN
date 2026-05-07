@@ -9,6 +9,7 @@ import {
   Loader2,
   LayoutDashboard,
   LogOut,
+  ExternalLink,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
@@ -30,6 +31,10 @@ export default function Header() {
   const [showDropdown, setShowDropdown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  const musafirStoreUrl = (
+    import.meta.env.VITE_MUSAFIR_USER_URL as string | undefined
+  )?.trim();
 
   // Debounce search API call
   useEffect(() => {
@@ -243,6 +248,17 @@ export default function Header() {
                 </div>
               </div>
             </div>
+            {musafirStoreUrl ? (
+              <a
+                href={musafirStoreUrl.replace(/\/$/, "")}
+                className="inline-flex h-10 flex-shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-600 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                aria-label="Open Musafir customer storefront"
+              >
+                <ExternalLink className="h-4 w-4 text-emerald-600" aria-hidden />
+                <span className="hidden sm:inline">Customer site</span>
+                <span className="sm:hidden">Store</span>
+              </a>
+            ) : null}
             <button
               type="button"
               onClick={() => logoutMutate()}
