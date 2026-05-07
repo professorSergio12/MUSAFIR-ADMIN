@@ -7,16 +7,27 @@ import cookieParser from "cookie-parser";
 const PORT = process.env.PORT || 5000;
 
 const app = express();
+
+const defaultCorsOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:3000",
+  "https://musafir-admin-frontend.vercel.app",
+];
+const extraFromEnv = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+const allowedOrigins = [...new Set([...defaultCorsOrigins, ...extraFromEnv])];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:3000",
-      "https://musafir-admin-frontend.vercel.app",
-    ],
+    origin(origin, callback) {
+      if (!origin) return callback(null, true);
+      callback(null, allowedOrigins.includes(origin));
+    },
     credentials: true,
-  })
+  }),
 );
 app.use(express.json());
 app.use(cookieParser());

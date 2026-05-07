@@ -10,12 +10,26 @@ const BUILTIN_ADMIN_PASSWORD = "root@123";
 /** Stable email for the auto-provisioned admin user (Mongo + JWT). */
 const BUILTIN_ADMIN_EMAIL = "admin.portal@musafir.local";
 
-const cookieOptions = {
-  httpOnly: true,
-  sameSite: "lax",
-  secure: process.env.NODE_ENV === "production",
-  path: "/",
-};
+/** Vercel + admin UI on another origin require SameSite=None for credentialed XHR. */
+const isProduction =
+  process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
+
+function getAccessTokenCookieOptions() {
+  if (isProduction) {
+    return {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+      path: "/",
+    };
+  }
+  return {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+    path: "/",
+  };
+}
 
 export const adminSignin = async (req, res, next) => {
   const parsed = adminSigninSchema.safeParse(req.body);
@@ -55,7 +69,7 @@ export const adminSignin = async (req, res, next) => {
     const userObj = user.toObject();
     const { password: _pwd, ...rest } = userObj;
     res
-      .cookie("access_token", token, cookieOptions)
+      .cookie("access_token", token, getAccessTokenCookieOptions())
       .status(200)
       .json({
         ...rest,
@@ -68,8 +82,14 @@ export const adminSignin = async (req, res, next) => {
 
 export const adminLogout = async (req, res, next) => {
   try {
+    const opts = getAccessTokenCookieOptions();
     res
-      .clearCookie("access_token", { path: "/" })
+      .clearCookie("access_token", {
+        path: opts.path,
+        httpOnly: opts.httpOnly,
+        sameSite: opts.sameSite,
+        secure: opts.secure,
+      })
       .status(200)
       .json({ message: "Logged out successfully" });
   } catch (e) {

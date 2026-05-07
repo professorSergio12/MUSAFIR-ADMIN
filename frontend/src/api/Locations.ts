@@ -1,22 +1,24 @@
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 export const fetchALocation = async (page: number = 1): Promise<any> => {
-  const data = await axios.get(
-    `${import.meta.env.VITE_BACKEND_URL}/api/admin/itenerary?page=${page}`
-  );
+  const data = await axiosInstance.get(`/api/admin/itenerary?page=${page}`);
   return data.data;
 };
 
-export const fetchLocationById = async (id:string): Promise<any> => {
-  const data = await axios.get(
-    `${import.meta.env.VITE_BACKEND_URL}/api/admin/itenerary/${id}`
-  );
+export const fetchLocationById = async (id: string): Promise<any> => {
+  const data = await axiosInstance.get(`/api/admin/itenerary/${id}`);
   return data.data;
 };
 
-export const fetchLocationsByQuery = async (query: string, value: string, page: number = 1): Promise<any> => {
+export const fetchLocationsByQuery = async (
+  query: string,
+  value: string,
+  page: number = 1,
+): Promise<any> => {
   try {
-    const data = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin/itenerary/query?${query}=${value}&page=${page}`);
+    const data = await axiosInstance.get(
+      `/api/admin/itenerary/query?${query}=${value}&page=${page}`,
+    );
     return data.data;
   } catch (error) {
     console.log("failed by query", error);
@@ -24,11 +26,13 @@ export const fetchLocationsByQuery = async (query: string, value: string, page: 
   }
 };
 
-// Lightweight picker endpoint (searchable dropdown)
-export const fetchItineraryPicker = async (q: string = "", limit: number = 50): Promise<any> => {
+export const fetchItineraryPicker = async (
+  q: string = "",
+  limit: number = 50,
+): Promise<any> => {
   try {
-    const data = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/itenerary/picker?q=${encodeURIComponent(q)}&limit=${limit}`
+    const data = await axiosInstance.get(
+      `/api/admin/itenerary/picker?q=${encodeURIComponent(q)}&limit=${limit}`,
     );
     return data.data;
   } catch (error) {
@@ -37,13 +41,15 @@ export const fetchItineraryPicker = async (q: string = "", limit: number = 50): 
   }
 };
 
-export const exportItineraryAPI = async (exportType: "all" | "current"): Promise<any> => {
+export const exportItineraryAPI = async (
+  exportType: "all" | "current",
+): Promise<any> => {
   try {
-    const { data } = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/itenerary/export?type=${exportType}`,
+    const { data } = await axiosInstance.get(
+      `/api/admin/itenerary/export?type=${exportType}`,
       {
-        responseType: 'blob', // Important for file downloads
-      }
+        responseType: "blob",
+      },
     );
     return data;
   } catch (error) {
@@ -54,14 +60,14 @@ export const exportItineraryAPI = async (exportType: "all" | "current"): Promise
 
 export const createItineraryAPI = async (formData: any): Promise<any> => {
   try {
-    const { data } = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/itenerary/create-itenerary`,
+    const { data } = await axiosInstance.post(
+      "/api/admin/itenerary/create-itenerary",
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     return data.data;
   } catch (error) {
@@ -70,16 +76,19 @@ export const createItineraryAPI = async (formData: any): Promise<any> => {
   }
 };
 
-export const updateItineraryAPI = async (id: string, formData: any): Promise<any> => {
+export const updateItineraryAPI = async (
+  id: string,
+  formData: any,
+): Promise<any> => {
   try {
-    const { data } = await axios.put(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/itenerary/update-itenerary/${id}`,
+    const { data } = await axiosInstance.put(
+      `/api/admin/itenerary/update-itenerary/${id}`,
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     return data;
   } catch (error) {

@@ -1,22 +1,24 @@
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 export const fetchALLHotels = async (page: number = 1): Promise<any> => {
-  const data = await axios.get(
-    `${import.meta.env.VITE_BACKEND_URL}/api/admin/hotel?page=${page}`
-  );
+  const data = await axiosInstance.get(`/api/admin/hotel?page=${page}`);
   return data.data;
 };
 
-export const fetchHotelsById = async (id:string): Promise<any> => {
-  const data = await axios.get(
-    `${import.meta.env.VITE_BACKEND_URL}/api/admin/hotel/${id}`
-  );
+export const fetchHotelsById = async (id: string): Promise<any> => {
+  const data = await axiosInstance.get(`/api/admin/hotel/${id}`);
   return data.data;
 };
 
-export const fetchHotelsByQuery = async (query : string , value: string, page: number = 1): Promise<any> => {
+export const fetchHotelsByQuery = async (
+  query: string,
+  value: string,
+  page: number = 1,
+): Promise<any> => {
   try {
-    const data = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin/hotel/query?${query}=${value}&page=${page}`);
+    const data = await axiosInstance.get(
+      `/api/admin/hotel/query?${query}=${value}&page=${page}`,
+    );
     return data.data;
   } catch (error) {
     console.log("failed by Name", error);
@@ -24,11 +26,13 @@ export const fetchHotelsByQuery = async (query : string , value: string, page: n
   }
 };
 
-// Lightweight picker endpoint (searchable dropdown)
-export const fetchHotelPicker = async (q: string = "", limit: number = 50): Promise<any> => {
+export const fetchHotelPicker = async (
+  q: string = "",
+  limit: number = 50,
+): Promise<any> => {
   try {
-    const data = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/hotel/picker?q=${encodeURIComponent(q)}&limit=${limit}`
+    const data = await axiosInstance.get(
+      `/api/admin/hotel/picker?q=${encodeURIComponent(q)}&limit=${limit}`,
     );
     return data.data;
   } catch (error) {
@@ -39,31 +43,35 @@ export const fetchHotelPicker = async (q: string = "", limit: number = 50): Prom
 
 export const createHotelAPI = async (formData: any): Promise<any> => {
   try {
-    const { data } = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/hotel/create-hotel`,
+    const { data } = await axiosInstance.post(
+      "/api/admin/hotel/create-hotel",
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
-  return data.data;
- } catch (error) {
-  console.log("failed to create hotel", error);
-  return null;
- }
+    return data.data;
+  } catch (error) {
+    console.log("failed to create hotel", error);
+    return null;
+  }
 };
-export const updateHotelAPI = async (id: string, formData: any): Promise<any> => {
+
+export const updateHotelAPI = async (
+  id: string,
+  formData: any,
+): Promise<any> => {
   try {
-    const { data } = await axios.put(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/hotel/update-hotel/${id}`,
+    const { data } = await axiosInstance.put(
+      `/api/admin/hotel/update-hotel/${id}`,
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     return data.data;
   } catch (error) {
@@ -72,13 +80,15 @@ export const updateHotelAPI = async (id: string, formData: any): Promise<any> =>
   }
 };
 
-export const exportHotelsAPI = async (exportType: "all" | "current"): Promise<any> => {
+export const exportHotelsAPI = async (
+  exportType: "all" | "current",
+): Promise<any> => {
   try {
-    const { data } = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/hotel/export?type=${exportType}`,
+    const { data } = await axiosInstance.get(
+      `/api/admin/hotel/export?type=${exportType}`,
       {
-        responseType: 'blob', // Important for file downloads
-      }
+        responseType: "blob",
+      },
     );
     return data;
   } catch (error) {

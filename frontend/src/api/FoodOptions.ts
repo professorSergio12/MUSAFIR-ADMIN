@@ -1,22 +1,24 @@
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 export const fetchALLFoodOptions = async (page: number = 1): Promise<any> => {
-  const data = await axios.get(
-    `${import.meta.env.VITE_BACKEND_URL}/api/admin/meal?page=${page}`
-  );
+  const data = await axiosInstance.get(`/api/admin/meal?page=${page}`);
   return data.data;
 };
 
-export const fetchFoodOptionById = async (id:string): Promise<any> => {
-  const data = await axios.get(
-    `${import.meta.env.VITE_BACKEND_URL}/api/admin/meal/${id}`
-  );
+export const fetchFoodOptionById = async (id: string): Promise<any> => {
+  const data = await axiosInstance.get(`/api/admin/meal/${id}`);
   return data.data;
 };
 
-export const fetchFoodOptionsByQuery = async (query: string, value: string, page: number = 1): Promise<any> => {
+export const fetchFoodOptionsByQuery = async (
+  query: string,
+  value: string,
+  page: number = 1,
+): Promise<any> => {
   try {
-    const data = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin/meal/query?${query}=${value}&page=${page}`);
+    const data = await axiosInstance.get(
+      `/api/admin/meal/query?${query}=${value}&page=${page}`,
+    );
     return data.data;
   } catch (error) {
     console.log("failed by query", error);
@@ -24,11 +26,13 @@ export const fetchFoodOptionsByQuery = async (query: string, value: string, page
   }
 };
 
-// Lightweight picker endpoint (searchable dropdown)
-export const fetchFoodPicker = async (q: string = "", limit: number = 50): Promise<any> => {
+export const fetchFoodPicker = async (
+  q: string = "",
+  limit: number = 50,
+): Promise<any> => {
   try {
-    const data = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/meal/picker?q=${encodeURIComponent(q)}&limit=${limit}`
+    const data = await axiosInstance.get(
+      `/api/admin/meal/picker?q=${encodeURIComponent(q)}&limit=${limit}`,
     );
     return data.data;
   } catch (error) {
@@ -37,13 +41,15 @@ export const fetchFoodPicker = async (q: string = "", limit: number = 50): Promi
   }
 };
 
-export const exportFoodOptionsAPI = async (exportType: "all" | "current"): Promise<any> => {
+export const exportFoodOptionsAPI = async (
+  exportType: "all" | "current",
+): Promise<any> => {
   try {
-    const { data } = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/meal/export?type=${exportType}`,
+    const { data } = await axiosInstance.get(
+      `/api/admin/meal/export?type=${exportType}`,
       {
-        responseType: 'blob', // Important for file downloads
-      }
+        responseType: "blob",
+      },
     );
     return data;
   } catch (error) {
@@ -54,32 +60,35 @@ export const exportFoodOptionsAPI = async (exportType: "all" | "current"): Promi
 
 export const createFoodOptionAPI = async (formData: any): Promise<any> => {
   try {
-    const { data } = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/meal/create-meal`,
+    const { data } = await axiosInstance.post(
+      "/api/admin/meal/create-meal",
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
-  return data.data;
- } catch (error) {
-  console.log("failed to create hotel", error);
-  return null;
- }
+    return data.data;
+  } catch (error) {
+    console.log("failed to create hotel", error);
+    return null;
+  }
 };
 
-export const updateFoodOptionAPI = async (id: string, formData: any): Promise<any> => {
+export const updateFoodOptionAPI = async (
+  id: string,
+  formData: any,
+): Promise<any> => {
   try {
-    const { data } = await axios.put(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/meal/update-meal/${id}`,
+    const { data } = await axiosInstance.put(
+      `/api/admin/meal/update-meal/${id}`,
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     return data;
   } catch (error) {
