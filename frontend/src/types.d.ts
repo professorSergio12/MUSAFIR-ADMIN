@@ -5,6 +5,11 @@ export interface DashboardType {
   activePackages: number;
   totalHotels: number;
   totalRevenue: number;
+  bookingStatus?: {
+    confirmed: number;
+    pending: number;
+    cancelled: number;
+  };
 }
 
 export interface RecentBookingType {
@@ -14,6 +19,7 @@ export interface RecentBookingType {
   };
   amount: number;
   createdAt: Date;
+  status?: string;
   user: {
     username: string;
   };

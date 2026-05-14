@@ -126,6 +126,32 @@ export default function Dashboard() {
     return date.toLocaleString("en", { month: "short" });
   };
 
+  const bookingStatusBadge = (status?: string) => {
+    const s = status ?? "Confirmed";
+    if (s === "Pending") {
+      return {
+        label: "Pending",
+        Icon: Clock,
+        className:
+          "inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-900 ring-1 ring-amber-200/80",
+      };
+    }
+    if (s === "Cancelled") {
+      return {
+        label: "Cancelled",
+        Icon: XCircle,
+        className:
+          "inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-900 ring-1 ring-red-200/80",
+      };
+    }
+    return {
+      label: "Confirmed",
+      Icon: CheckCircle2,
+      className:
+        "inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-900 ring-1 ring-emerald-200/80",
+    };
+  };
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
@@ -294,21 +320,27 @@ export default function Dashboard() {
                   <CheckCircle2 className="w-4 h-4 text-slate-600" />
                   <span className="text-sm text-slate-700">Confirmed</span>
                 </div>
-                <span className="text-sm font-semibold text-slate-900">80</span>
+                <span className="text-sm font-semibold text-slate-900">
+                  {dashboard?.bookingStatus?.confirmed ?? 0}
+                </span>
               </div>
               <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
                 <div className="flex items-center gap-3">
                   <Clock className="w-4 h-4 text-slate-600" />
                   <span className="text-sm text-slate-700">Pending</span>
                 </div>
-                <span className="text-sm font-semibold text-slate-900">25</span>
+                <span className="text-sm font-semibold text-slate-900">
+                  {dashboard?.bookingStatus?.pending ?? 0}
+                </span>
               </div>
               <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
                 <div className="flex items-center gap-3">
                   <XCircle className="w-4 h-4 text-slate-600" />
                   <span className="text-sm text-slate-700">Cancelled</span>
                 </div>
-                <span className="text-sm font-semibold text-slate-900">15</span>
+                <span className="text-sm font-semibold text-slate-900">
+                  {dashboard?.bookingStatus?.cancelled ?? 0}
+                </span>
               </div>
             </div>
           </div>
@@ -376,48 +408,53 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-slate-200">
-                {recentBookings.map((b) => (
-                  <tr
-                    key={b?._id}
-                    className="hover:bg-slate-50 transition-colors"
-                  >
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
-                        <div className="p-1.5 bg-sky-50 rounded-full">
-                          <User className="w-3.5 h-3.5 text-sky-500" />
+                {recentBookings.map((b) => {
+                  const { label, Icon, className } = bookingStatusBadge(
+                    b.status
+                  );
+                  return (
+                    <tr
+                      key={b?._id}
+                      className="hover:bg-slate-50 transition-colors"
+                    >
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <div className="p-1.5 bg-sky-50 rounded-full">
+                            <User className="w-3.5 h-3.5 text-sky-500" />
+                          </div>
+                          <span className="text-sm font-medium text-slate-900">
+                            {b.user?.username}
+                          </span>
                         </div>
-                        <span className="text-sm font-medium text-slate-900">
-                          {b.user?.username}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <span className="text-sm text-slate-700">
+                          {b.packageId?.name}
                         </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className="text-sm text-slate-700">
-                        {b.packageId?.name}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className="text-sm font-medium text-slate-900">
-                        {formatCurrency(b.amount)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
-                        <CheckCircle2 className="w-3 h-3" />
-                        Confirmed
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className="text-sm text-slate-600">
-                        {b.createdAt
-                          ? new Date(b.createdAt as unknown as string)
-                              .toISOString()
-                              .split("T")[0]
-                          : ""}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <span className="text-sm font-medium text-slate-900">
+                          {formatCurrency(b.amount)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <span className={className}>
+                          <Icon className="h-3 w-3" />
+                          {label}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <span className="text-sm text-slate-600">
+                          {b.createdAt
+                            ? new Date(b.createdAt as unknown as string)
+                                .toISOString()
+                                .split("T")[0]
+                            : ""}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

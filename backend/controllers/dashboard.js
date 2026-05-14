@@ -6,21 +6,40 @@ import PackageReviews from "../models/packageReviews.model.js";
 export const getSummary = async (req, res, next) => {
   console.log("get summary called");
   try {
-    const allHotel = await Hotel.countDocuments();
-    const allPackage = await Package.countDocuments();
-    const allBooking = await Booking.countDocuments();
-    const revenue = await Booking.aggregate([
-      {
-        $group: {
-          _id: null,
-          totalRevenue: {
-            $sum: {
-              $toDouble: "$amount",
+    const [allHotel, allPackage, allBooking, revenue, statusAgg] =
+      await Promise.all([
+        Hotel.countDocuments(),
+        Package.countDocuments(),
+        Booking.countDocuments(),
+        Booking.aggregate([
+          {
+            $group: {
+              _id: null,
+              totalRevenue: {
+                $sum: {
+                  $toDouble: "$amount",
+                },
+              },
             },
           },
-        },
-      },
-    ]);
+        ]),
+        Booking.aggregate([
+          {
+            $group: {
+              _id: { $ifNull: ["$status", "Confirmed"] },
+              count: { $sum: 1 },
+            },
+          },
+        ]),
+      ]);
+
+    const statusMap = { Confirmed: 0, Pending: 0, Cancelled: 0 };
+    for (const row of statusAgg) {
+      const key = row._id;
+      if (key === "Confirmed" || key === "Pending" || key === "Cancelled") {
+        statusMap[key] = row.count;
+      }
+    }
 
     res.status(200).json({
       msg: "Summary fetched successfully",
@@ -29,6 +48,11 @@ export const getSummary = async (req, res, next) => {
         activePackages: allPackage,
         totalBookings: allBooking,
         totalRevenue: revenue[0]?.totalRevenue || 0,
+        bookingStatus: {
+          confirmed: statusMap.Confirmed,
+          pending: statusMap.Pending,
+          cancelled: statusMap.Cancelled,
+        },
       },
     });
   } catch (error) {
@@ -41,9 +65,9 @@ export const getRecentBookings = async (req, res, next) => {
   try {
     const recentBookings = await Booking.find(
       {},
-      { time: 1, amount: 1, createdAt: 1 }
+      { time: 1, amount: 1, createdAt: 1, status: 1 }
     )
-      .sort({ created: -1 })
+      .sort({ createdAt: -1 })
       .limit(3)
       .populate("user", { username: 1 })
       .populate("packageId", { name: 1 });
